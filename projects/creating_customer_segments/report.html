@@ -12058,7 +12058,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#df = pd.DataFrame(data)</span>
@@ -12069,8 +12069,12 @@ div#notebook {
 <span class="n">samples_t</span><span class="p">[</span><span class="s1">&#39;Total&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">samples_total</span>
 <span class="k">print</span> <span class="s2">&quot;Summary:&quot;</span>
 <span class="n">display</span><span class="p">(</span><span class="n">samples_t</span><span class="p">)</span>
+
+<span class="n">data_total</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">data_t</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">data_t</span><span class="p">[</span><span class="s1">&#39;Total&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">data_total</span>
 <span class="k">print</span> <span class="s2">&quot;Compared to median:&quot;</span>
-<span class="n">display</span><span class="p">(</span><span class="n">samples</span><span class="o">/</span><span class="n">data</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+<span class="n">display</span><span class="p">(</span><span class="n">samples_t</span><span class="o">/</span><span class="n">data_t</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
 </pre></div>
 
 </div>
@@ -12164,6 +12168,7 @@ div#notebook {
       <th>Frozen</th>
       <th>Detergents_Paper</th>
       <th>Delicatessen</th>
+      <th>Total</th>
     </tr>
   </thead>
   <tbody>
@@ -12175,6 +12180,7 @@ div#notebook {
       <td>3.377457</td>
       <td>5.311696</td>
       <td>17.113413</td>
+      <td>4.031318</td>
     </tr>
     <tr>
       <th>245</th>
@@ -12184,6 +12190,7 @@ div#notebook {
       <td>0.150721</td>
       <td>10.940600</td>
       <td>2.883480</td>
+      <td>1.275971</td>
     </tr>
     <tr>
       <th>329</th>
@@ -12193,6 +12200,7 @@ div#notebook {
       <td>3.359764</td>
       <td>0.602572</td>
       <td>0.765407</td>
+      <td>0.638004</td>
     </tr>
   </tbody>
 </table>
@@ -12211,9 +12219,9 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong>
-<br>Customer 23 has a large total spend with a larger than average portions on delicatessen and milk, it sounds like a local creamery that serves milk shakes and sandwiches!
-<br>Customer 245 has a the largest spend on Detergents_Paper and a large spend on Delicatessen, Grocery and then Milk. It may be a grocery store. 
-<br>Customer 329 is small but spends the largest amount on Fozen, normal on most other items but very low on Detergents_Paper. It could be a fast food restaurant cooking a lot of frozen food.</p>
+<br>Customer 23 has a large total spend (4x median total) with a larger than median spends on delicatessen (17x median) and milk (10x median), it sounds like a local creamery that serves milk shakes and sandwiches!
+<br>Customer 245 has a little over the median total spend with its largest spend on Detergents_Paper (10x median) and a large spend on Delicatessen, Grocery (both about 3x median) and then 1.7x as much on Milk as compared with the median spends for those items. It may be a small grocery store. 
+<br>Customer 329 is small (0.6x median) but spends a large amount on Fozen (3.3x median), the other spends are in line with its size (0.4 to 0.9 x median). It could be a fast food restaurant cooking a lot of frozen food.</p>
 
 </div>
 </div>
@@ -20717,12 +20725,15 @@ Once you have performed this implementation, the dataset will be stored in the v
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[62]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># For each feature find the data points with extreme high or low values</span>
 <span class="n">stats</span> <span class="o">=</span> <span class="n">log_data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 <span class="n">display</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">({})</span>
 
 <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">log_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
     
@@ -20740,7 +20751,10 @@ Once you have performed this implementation, the dataset will be stored in the v
 
     <span class="c1"># Display the outliers</span>
     <span class="k">print</span> <span class="s2">&quot;Data points considered outliers for the feature &#39;{}&#39;:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
-    <span class="n">indices_remove</span> <span class="o">=</span> <span class="n">log_data</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">log_data</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="n">step</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">log_data</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="n">step</span><span class="p">))]</span>    
+    <span class="n">indices_remove</span> <span class="o">=</span> <span class="n">log_data</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">log_data</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="n">step</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">log_data</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="n">step</span><span class="p">))]</span>   
+    <span class="c1">#print &quot;indices_remove.keys():&quot;, indices_remove.keys()</span>
+    <span class="c1">#print &quot;c:&quot;, c</span>
+    <span class="c1">#print &quot;indices_remove:&quot;, indices_remove</span>
     <span class="n">display</span><span class="p">(</span><span class="n">log_data</span><span class="p">[</span><span class="o">~</span><span class="p">((</span><span class="n">log_data</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">Q1</span> <span class="o">-</span> <span class="n">step</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">log_data</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="n">step</span><span class="p">))])</span>
 
 <span class="c1"># OPTIONAL: Select the indices for data points you wish to remove</span>
@@ -21506,9 +21520,11 @@ Data points considered outliers for the feature &#39;Delicatessen&#39;:
 <p><strong>Answer:</strong>
 <br>Several samples had outliers for more than one feature based on the Tukey definition of outlier:</p>
 <p><ul>
-  <li>Sample 154 had outliers for: Milk, Grocery, Delicatessen</li>
   <li>Sample 65 had outliers for: Fresh, Frozen</li>
   <li>Sample 66 had outliers for: Fresh, Delicatessen</li>
+  <li>Sample 75 had outliers for: Grocery, Detergents_Paper</li>
+  <li>Sample 128 had outliers for: Fresh, Delicatessen</li>
+  <li>Sample 154 had outliers for: Milk, Grocery, Delicatessen</li>
 </ul><br>
 The outliers don't seem too far of so I don't think they need to be removed.</p>
 
@@ -22394,8 +22410,8 @@ RU5ErkJggg==
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong>
-<br>K-Means clustering represents clusters with a center and uses the distance from a sample point to the center of each cluster to determing which cluster center is closest and then catorgorize the sample as belongin to that cluster. This results in a 'hard' categorization of each point, where it is assigned one and only one cluster.
-<br>Gaussian Mixture Model (GMM) clustering represents each cluster with a multivariate Gaussian distribution rather than as only a center point (which K-Means uses). This allows GMM to represent more complex cluster shapes than K-Means. GMM can also be used to provide a 'soft' categorization, where we can consider the probabilities that a point belongs to each cluster.
+<br>K-Means clustering represents clusters with a center and uses the distance from a sample point to the center of each cluster to determing which cluster center is closest and then catorgorize the sample as belongin to that cluster. This results in a 'hard' categorization of each point, where it is assigned one and only one cluster. Due to its simplicity it is very scalable for large number of samples and reasonble number of clusters.
+<br>Gaussian Mixture Model (GMM) clustering represents each cluster with a multivariate Gaussian distribution rather than as only a center point (which K-Means uses). This allows GMM to represent more complex cluster shapes than K-Means. GMM can also be used to provide a 'soft' categorization, where we can consider the probabilities that a point belongs to each cluster. The additional complexity of GMM means that it is not very scalable in number of samples or clusters.
 <br>I'm going to use K-Means clustering since I don't want a 'soft' categorization of the data.</p>
 
 </div>
@@ -30258,12 +30274,15 @@ kiRJktRmLIQkSZIkSZLajIWQJEmSJElSm/n/oWazF+x2EXkAAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[48]:</div>
+<div class="prompt input_prompt">In&nbsp;[63]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Display the predictions</span>
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_preds</span><span class="p">):</span>
     <span class="k">print</span> <span class="s2">&quot;Sample point&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot;predicted to be in Cluster&quot;</span><span class="p">,</span> <span class="n">pred</span>
+    
+<span class="n">display</span><span class="p">(</span><span class="n">true_centers</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -30283,6 +30302,99 @@ Sample point 2 predicted to be in Cluster 1
 </div>
 </div>
 
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Fresh</th>
+      <th>Milk</th>
+      <th>Grocery</th>
+      <th>Frozen</th>
+      <th>Detergents_Paper</th>
+      <th>Delicatessen</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Segment 0</th>
+      <td>3570</td>
+      <td>7749</td>
+      <td>12463</td>
+      <td>900</td>
+      <td>4567</td>
+      <td>966</td>
+    </tr>
+    <tr>
+      <th>Segment 1</th>
+      <td>8994</td>
+      <td>1909</td>
+      <td>2366</td>
+      <td>2081</td>
+      <td>290</td>
+      <td>681</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Fresh</th>
+      <th>Milk</th>
+      <th>Grocery</th>
+      <th>Frozen</th>
+      <th>Detergents_Paper</th>
+      <th>Delicatessen</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>23</th>
+      <td>26373</td>
+      <td>36423</td>
+      <td>22019</td>
+      <td>5154</td>
+      <td>4337</td>
+      <td>16523</td>
+    </tr>
+    <tr>
+      <th>245</th>
+      <td>3062</td>
+      <td>6154</td>
+      <td>13916</td>
+      <td>230</td>
+      <td>8933</td>
+      <td>2784</td>
+    </tr>
+    <tr>
+      <th>329</th>
+      <td>5113</td>
+      <td>1486</td>
+      <td>4583</td>
+      <td>5127</td>
+      <td>492</td>
+      <td>739</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -30294,7 +30406,9 @@ Sample point 2 predicted to be in Cluster 1
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong>
 <br>Samples 0 and 1 are best represented by Category 0, which I'm guessing are grocery stores.
-<br>Sample 2 is best represented by Category 1, which I'm guessing are restaurants.</p>
+<br>Sample 2 is best represented by Category 1, which I'm guessing are restaurants.
+<br>Samples 0 and 1 are significantly higher in Milk, Grocery and Detergents_Paper as is Segment 0 which they were categorized as. Fresh and Frozen are significantly lower for sample 1 and Segment 0 but not sample 0 as it has a very large total spend.
+<br>Sample 2 is significantly lower in Milk, Grocery and Detergents_Paper as is Segment 1 that it was categorized as.</p>
 
 </div>
 </div>
