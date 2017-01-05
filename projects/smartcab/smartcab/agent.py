@@ -38,22 +38,22 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Update epsilon using a decay function of your choice
-        #    self.epsilon = self.epsilon - 0.05
-        #    self.epsilon = pow(self.epsilon, 1.1) - 0.0001
-        #   self.epsilon = pow(self.epsilon, 1.05) - 0.00001
-        # self.epsilon = 1.0 - 0.05 * self.t
-        alpha = 0.005 # 0.01 gives almost 160
-        self.epsilon = math.cos(alpha * self.t) 
-        if self.epsilon <= 0.0:
-            self.epsilon = 0.0
-        self.t += 1
+        decay_function = 'linear'
+        if decay_function == 'linear':
+            self.epsilon = self.epsilon - 0.05
+        else:
+            alpha = 0.005 # 0.01 gives almost 160
+            self.epsilon = math.cos(alpha * self.t) 
+            if self.epsilon <= 0.0:
+                self.epsilon = 0.0
         # Update additional class parameters as needed
+        self.t += 1
         # If 'testing' is True, set epsilon and alpha to 0
         if testing == True:
             self.epsilon = 0.0
             self.alpha = 0.0
-
         return None
+
 
     def build_state(self):
         """ The build_state function is called when the agent requests data from the 
@@ -82,8 +82,8 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
         Qs = self.Q[state]
-        maxQ = max(Qs, key = Qs.get)
-
+        max_key = max(Qs)
+        maxQ = Qs[max_key]
         return maxQ 
 
 
@@ -124,9 +124,22 @@ class LearningAgent(Agent):
                 action = random.choice(self.valid_actions)
             else:
                 #   Otherwise, choose an action with the highest Q-value for the current state
-                action = self.get_maxQ(state)
+                maxQ = self.get_maxQ(state)
+                Qs = self.Q[state]
+                max_actions = []
+                for action in Qs:
+                    if Qs[action] == maxQ:
+                        max_actions.append(action)
+                num_max = len(max_actions)
+                rand = random.randrange(0,num_max)
+                action = max_actions[rand]
+                """
+                print 'Qs:', Qs
+                print 'maxQ:', maxQ
+                print 'max_actions:', max_actions
+                print 'rand:', rand
                 print "action:", action
- 
+                """
         return action
 
     
@@ -215,7 +228,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=True)
+    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=False)
     
     ##############
     # Run the simulator
