@@ -39,10 +39,12 @@ class LearningAgent(Agent):
         ###########
         # Update epsilon using a decay function of your choice
         decay_function = 'linear'
+        decay_function = 'cosine'
         if decay_function == 'linear':
             self.epsilon = self.epsilon - 0.05
         else:
             alpha = 0.005 # 0.01 gives almost 160
+            alpha = 0.002 # 0.01 gives almost 160
             self.epsilon = math.cos(alpha * self.t) 
             if self.epsilon <= 0.0:
                 self.epsilon = 0.0
@@ -81,9 +83,12 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Calculate the maximum Q-value of all actions for a given state
+        """
         Qs = self.Q[state]
         max_key = max(Qs)
         maxQ = Qs[max_key]
+        """
+        maxQ = max(self.Q[state].values())
         return maxQ 
 
 
@@ -130,9 +135,12 @@ class LearningAgent(Agent):
                 for action in Qs:
                     if Qs[action] == maxQ:
                         max_actions.append(action)
+                """
                 num_max = len(max_actions)
                 rand = random.randrange(0,num_max)
                 action = max_actions[rand]
+                """
+                action = random.choice(max_actions)
                 """
                 print 'Qs:', Qs
                 print 'maxQ:', maxQ
@@ -228,7 +236,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=False)
+    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=True)
     
     ##############
     # Run the simulator
