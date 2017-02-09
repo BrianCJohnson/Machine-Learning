@@ -1,6 +1,6 @@
 ##Micromouse simulation with visualization.
 
-The project consists of 6 Python files and 1 Excel file:
+The project consists of 6 Python files:
 - **MicroMouse.py**
   - the main program, contains most setup and main loop
 - **maze.py**
@@ -19,9 +19,6 @@ The project consists of 6 Python files and 1 Excel file:
   - sets up Tkinter
   - defines a number of display related functions
   
-- **Maze Editing Tool 20170206.xlsx**
-  - Excel file that enables easy creation and editing of mazes
-
 Running the Python code requires Tkinter, math, numpy, time, random, copy and Queue.
 
 The following variables may be changed in MicroMouse.py:
@@ -35,3 +32,7 @@ The following variables may be changed in MicroMouse.py:
 The following variables may be changed in mouse.py:
 - **with_markers**
   - enables display of search markers, line 63
+
+There is also 1 Excel file:
+- **Maze Editing Tool 20170206.xlsx**
+  - Excel file that enables easy creation and editing of mazes
